@@ -1,9 +1,19 @@
-const title = "React from Robin Wieruch"
+const welcome = {
+  title: 'Hey',
+  greeting: 'React'
+};
+
+function getTitle(title: string){
+  return title;
+}
 
 function App() {
   return (
     <div>
-      <h1>Hello {title}</h1>
+      <h1>{welcome.title} {getTitle(welcome.greeting)}</h1>
+
+      <label htmlFor="search">Search: </label> {/* htmlFor allows clicking on label to put focus in input#search */}
+      <input id="search" type="text" />
     </div>
   )
 }
