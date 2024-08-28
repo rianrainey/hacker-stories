@@ -1,8 +1,3 @@
-const welcome = {
-  title: 'Hey',
-  greeting: 'React'
-};
-
 const list = [
   {
     title: 'React',
@@ -22,50 +17,42 @@ const list = [
   },
 ]
 
-function getTitle(title: string){
-  return title;
-}
+// function App() {
+// Arrow function declaration instead
+const App = () => (
+  <div>
+    <h1>My Hacker Stories</h1>
+    <Search />
+    <hr />
+    <List />
+    <List />
+  </div>
+)
 
-function App() {
-  return (
-    <div>
-      <h1>My Hacker Stories</h1>
+// function Search() {
+const Search = () => (
+  <div>
+    <label htmlFor="search">Search: </label> {/* htmlFor allows clicking on label to put focus in input#search */}
+    <input id="search" type="text" />
+  </div>
+)
 
-      <Search />
-
-      <hr />
-
-      <List />
-    </div>
-  )
-}
-
-function Search() {
-  return (
-    <div>
-      <label htmlFor="search">Search: </label> {/* htmlFor allows clicking on label to put focus in input#search */}
-      <input id="search" type="text" />
-    </div>
-  )
-}
-
-function List(){
-  return(
-    <ul>
-      {list.map((item, index) => {
-        return (
-          <li key={index}>
-            <span>
-              <a href={item.url}>{item.title}</a>
-            </span>
-            <span>{item.author}</span>
-            <span>{item.num_comments}</span>
-            <span>{item.points}</span>
-          </li>
-        );
-      })}
-    </ul>
-  )
-}
+// function List(){
+const List = () => (
+  <ul>
+    {list.map((item) => {
+      return (
+        <li key={item.objectID}>
+          <span>
+            <a href={item.url}>{item.title}</a>
+          </span>
+          <span>{item.author}</span>
+          <span>{item.num_comments}</span>
+          <span>{item.points}</span>
+        </li>
+      );
+    })}
+  </ul>
+)
 
 export default App
