@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 type Story = {
   objectID: number,
   url: string,
@@ -8,6 +10,8 @@ type Story = {
 }
 
 const App = () => {
+  console.log('App renders');
+
   const stories = [
     {
       title: 'React',
@@ -37,14 +41,21 @@ const App = () => {
 }
 
 const Search = () => {
+  console.log('Search renders');
+  const [searchTerm, setSearchTerm] = React.useState('');
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log(event);
     console.log(event.target.value);
+    setSearchTerm(event.target.value);
   }
   return (
     <div>
       <label htmlFor="search" >Search: </label> {/* htmlFor allows clicking on label to put focus in input#search */}
       <input id="search" type="text" onChange={handleChange} />
+      <p>
+        Searching for {searchTerm}
+      </p>
     </div>
   )
 }
@@ -53,22 +64,28 @@ type ListProps = {
   list: Story[];
 }
 
-const List = (props:ListProps) => (
-  <ul>
-    {props.list.map((item) => {
-      {/* I guess key has to go here and not in Item component?  */ }
-      return (
-        <Item key={item.objectID} item={item}/>
-      );
-    })}
-  </ul>
-)
+const List = (props:ListProps) => {
+  console.log('List renders');
+
+  return (
+    <ul>
+      {props.list.map((item) => {
+        {/* I guess key has to go here and not in Item component?  */ }
+        return (
+          <Item key={item.objectID} item={item}/>
+        );
+      })}
+    </ul>
+  )
+}
 
 type ItemProps = {
   item: Story
 }
 
 const Item = (props:ItemProps) => {
+  console.log('Item renders');
+
   return (
     <li>
       <span>
