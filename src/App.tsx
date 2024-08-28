@@ -29,27 +29,42 @@ function getTitle(title: string){
 function App() {
   return (
     <div>
-      <h1>{welcome.title} {getTitle(welcome.greeting)}</h1>
+      <h1>My Hacker Stories</h1>
 
+      <Search />
+
+      <hr />
+
+      <List />
+    </div>
+  )
+}
+
+function Search() {
+  return (
+    <div>
       <label htmlFor="search">Search: </label> {/* htmlFor allows clicking on label to put focus in input#search */}
       <input id="search" type="text" />
-      <hr />
-      <h1>Articles</h1>
-      <ul>
-        {list.map((item, index) => {
-          return (
-            <li key={index}>
-              <span>
-                <a href={item.url}>{item.title}</a>
-              </span>
-              <span>{item.author}</span>
-              <span>{item.num_comments}</span>
-              <span>{item.points}</span>
-            </li>
-          );
-        })}
-      </ul>
     </div>
+  )
+}
+
+function List(){
+  return(
+    <ul>
+      {list.map((item, index) => {
+        return (
+          <li key={index}>
+            <span>
+              <a href={item.url}>{item.title}</a>
+            </span>
+            <span>{item.author}</span>
+            <span>{item.num_comments}</span>
+            <span>{item.points}</span>
+          </li>
+        );
+      })}
+    </ul>
   )
 }
 
