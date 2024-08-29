@@ -9,13 +9,27 @@ type Story = {
   points: number
 }
 
-const App = () => {
-  console.log('App renders');
+/**
+ * useStorageState is a custom React hook that manages a state value
+ * that is synchronized with local storage. It takes a key and an
+ * initial state as arguments. The hook initializes the state with
+ * the value from local storage if it exists, or with the provided
+ * initial state. It also provides a setter function to update the
+ * state, which in turn updates the local storage whenever the
+ * state changes.
+ *
+ * @param {string} key - The key used to store the value in local storage.
+ * @param {string} initialState - The initial state value if no value
+ *                                exists in local storage.
+ * @returns {[string, function]} - An array containing the current
+ *                                  state value and a function to
+ *                                  update it.
+ */
 
-  const [searchTerm, setSearchTerm] = React.useState(
-    localStorage.getItem('search') || 'React'
+const useStorageState = (key:string, initialState:string) => {
+  const [value, setValue] = React.useState(
+    localStorage.getItem(key) || initialState
   );
-
   /*
     Mutations, subscriptions, timers, logging, and other side effects are not allowed inside the main body of a function component (referred to as React’s render phase).
     Doing so will lead to confusing bugs and inconsistencies in the UI.
@@ -28,8 +42,14 @@ const App = () => {
     If searchTerm remains the same, the effect will not run again.
   */
   React.useEffect(() => {
-    localStorage.setItem('search', searchTerm);
-  }, [searchTerm])
+    localStorage.setItem(key, value);
+  }, [value, key])
+
+  return [value, setValue] as const;
+}
+const App = () => {
+
+  const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
 
   const handleSearch = (event:React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
