@@ -12,7 +12,7 @@ type Story = {
 const App = () => {
   console.log('App renders');
 
-  const [searchTerm, setSearchTerm] = React.useState('');
+  const [searchTerm, setSearchTerm] = React.useState('React');
   const handleSearch = (event:React.ChangeEvent<HTMLInputElement>) => {
     console.log('In app: ' + event.target.value);
     setSearchTerm(event.target.value);
@@ -41,7 +41,7 @@ const App = () => {
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <Search onSearch={handleSearch}/>
+      <Search onSearch={handleSearch} searchTerm={searchTerm}/>
       <hr />
       <List list={searchedStories}/>
     </div>
@@ -50,6 +50,7 @@ const App = () => {
 
 type searchProps = {
   onSearch: (element: React.ChangeEvent<HTMLInputElement>) => void;
+  searchTerm: string
 }
 const Search = (props:searchProps) => {
   console.log('Search renders');
@@ -57,7 +58,7 @@ const Search = (props:searchProps) => {
   return (
     <div>
       <label htmlFor="search" >Search: </label> {/* htmlFor allows clicking on label to put focus in input#search */}
-      <input id="search" type="text" onChange={props.onSearch} />
+      <input id="search" type="text" value={props.searchTerm} onChange={props.onSearch} />
     </div>
   )
 }
