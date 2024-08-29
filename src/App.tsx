@@ -12,8 +12,10 @@ type Story = {
 const App = () => {
   console.log('App renders');
 
+  const [searchTerm, setSearchTerm] = React.useState('');
   const handleSearch = (event:React.ChangeEvent<HTMLInputElement>) => {
     console.log('In app: ' + event.target.value);
+    setSearchTerm(event.target.value);
   }
   const stories = [
     {
@@ -33,12 +35,15 @@ const App = () => {
       objectID: 1,
     },
   ];
+  const searchedStories = stories.filter(function(story) {
+    return story.title.toLowerCase().includes(searchTerm.toLowerCase());
+  });
   return (
     <div>
       <h1>My Hacker Stories</h1>
       <Search onSearch={handleSearch}/>
       <hr />
-      <List list={stories}/>
+      <List list={searchedStories}/>
     </div>
   );
 }
@@ -48,21 +53,11 @@ type searchProps = {
 }
 const Search = (props:searchProps) => {
   console.log('Search renders');
-  const [searchTerm, setSearchTerm] = React.useState('');
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event);
-    console.log('In Search: ' + event.target.value);
-    setSearchTerm(event.target.value);
-    props.onSearch(event)
-  }
   return (
     <div>
       <label htmlFor="search" >Search: </label> {/* htmlFor allows clicking on label to put focus in input#search */}
-      <input id="search" type="text" onChange={handleChange} />
-      <p>
-        Searching for {searchTerm}
-      </p>
+      <input id="search" type="text" onChange={props.onSearch} />
     </div>
   )
 }
