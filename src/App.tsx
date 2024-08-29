@@ -93,10 +93,10 @@ const Search = ({searchTerm, onSearch}:searchProps) => {
   console.log('Search renders');
 
   return (
-    <div>
+    <>
       <label htmlFor="search" >Search: </label> {/* htmlFor allows clicking on label to put focus in input#search */}
       <input id="search" type="text" value={searchTerm} onChange={onSearch} />
-    </div>
+    </>
   )
 }
 
