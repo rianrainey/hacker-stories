@@ -9,6 +9,11 @@ type Story = {
   points: number
 }
 
+const ACTIONS = {
+  SET_STORIES: 'SET_STORIES',
+  REMOVE_STORY: 'REMOVE_STORY'
+}
+
 /**
  * useStorageState is a custom React hook that manages a state value
  * that is synchronized with local storage. It takes a key and an
@@ -47,51 +52,75 @@ const useStorageState = (key:string, initialState:string) => {
 
   return [value, setValue] as const;
 }
+const initialStories = [
+  {
+    title: 'React',
+    url: 'https://reactjs.org/',
+    author: 'Jordan Walke',
+    num_comments: 3,
+    points: 4,
+    objectID: 0,
+  },
+  {
+    title: 'Redux',
+    url: 'https://redux.js.org/',
+    author: 'Dan Abramov, Andrew Clark',
+    num_comments: 2,
+    points: 5,
+    objectID: 1,
+  },
+];
+const getAsyncStories = (): Promise<{ data: { stories: Story[] } }> =>
+  new Promise((resolve) => {
+    const retrieveData = () => {
+      resolve({
+        data: {
+          stories: initialStories
+        }
+      })
+    }
+    setTimeout(retrieveData, 2000)
+  })
+type StoriesState = Story[];
+type StoriesSetAction = {
+  type: typeof ACTIONS.SET_STORIES
+  payload: Story[];
+}
+type StoriesRemoveAction = {
+  type: typeof ACTIONS.REMOVE_STORY
+  payload: Story
+}
+type StoriesAction = StoriesSetAction | StoriesRemoveAction
+const storiesReducer = (state:StoriesState, action:StoriesAction) => {
+  switch (action.type) {
+    case ACTIONS.SET_STORIES:
+      return action.payload
+    case ACTIONS.REMOVE_STORY:
+      return state.filter(
+        (story: Story) => action.payload.objectID !== story.objectID
+      )
+    default:
+      throw new Error()
+  }
+}
 const App = () => {
-  const initialStories = [
-    {
-      title: 'React',
-      url: 'https://reactjs.org/',
-      author: 'Jordan Walke',
-      num_comments: 3,
-      points: 4,
-      objectID: 0,
-    },
-    {
-      title: 'Redux',
-      url: 'https://redux.js.org/',
-      author: 'Dan Abramov, Andrew Clark',
-      num_comments: 2,
-      points: 5,
-      objectID: 1,
-    },
-  ];
-
-  const getAsyncStories = (): Promise<{ data: { stories: Story[] } }> =>
-    new Promise((resolve) => {
-      const retrieveData = () => {
-        resolve({
-          data: {
-            stories: initialStories
-          }
-        })
-      }
-      setTimeout(retrieveData, 2000)
-    })
-
   const [searchTerm, setSearchTerm] = useStorageState('search', '');
-  const [stories, setStories] = React.useState<Story[]>([])
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [isError, setIsError] = React.useState(false)
+  const [stories, dispatchStories] = React.useReducer(storiesReducer, []);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isError, setIsError] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setIsLoading(true);
     getAsyncStories()
       .then((result) => {
-        setStories(result.data.stories);
+        dispatchStories({
+          type: ACTIONS.SET_STORIES,
+          payload: result.data.stories || [] // Ensure payload is an array
+        });
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Error fetching stories:', error); // Log the error for debugging
         setIsError(true);
       })
   }, []);
@@ -99,19 +128,16 @@ const App = () => {
   const handleSearch = (event:React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   }
-  const searchedStories = stories.filter(function(story) {
+  const searchedStories = stories.filter(function(story:Story) {
     return story.title.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   const handleRemoveStory = (item: Story) => {
-    const newStories = stories.filter(
-      (story) => item.objectID !== story.objectID
-    );
-    setStories(newStories);
+    dispatchStories({type: ACTIONS.REMOVE_STORY, payload: item});
   }
 
   const resetStories = () => {
-    setStories(initialStories);
+    dispatchStories({type: ACTIONS.SET_STORIES, payload: initialStories});
   }
 
   return (
