@@ -48,13 +48,7 @@ const useStorageState = (key:string, initialState:string) => {
   return [value, setValue] as const;
 }
 const App = () => {
-
-  const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
-
-  const handleSearch = (event:React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  }
-  const stories = [
+  const initialStories = [
     {
       title: 'React',
       url: 'https://reactjs.org/',
@@ -72,9 +66,27 @@ const App = () => {
       objectID: 1,
     },
   ];
+  const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
+  const [stories, setStories] = React.useState(initialStories)
+
+  const handleSearch = (event:React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  }
   const searchedStories = stories.filter(function(story) {
     return story.title.toLowerCase().includes(searchTerm.toLowerCase());
   });
+
+  const handleRemoveStory = (item: Story) => {
+    const newStories = stories.filter(
+      (story) => item.objectID !== story.objectID
+    );
+    setStories(newStories);
+  }
+
+  const resetStories = () => {
+    setStories(initialStories);
+  }
+
   return (
     <div>
       <h1>My Hacker Stories</h1>
@@ -87,7 +99,8 @@ const App = () => {
         <strong>Search: </strong>
       </InputWithLabel>
       <hr />
-      <List list={searchedStories}/>
+      <List list={searchedStories} onRemoveItem={handleRemoveStory}/>
+      <button type='button' onClick={resetStories}>Reset Stories</button>
     </div>
   );
 }
@@ -131,29 +144,41 @@ const InputWithLabel = ({
 
 type ListProps = {
   list: Story[];
+  onRemoveItem: (item: Story) => void;
 }
 
-const List = ({list}:ListProps) => (
+const List = ({list, onRemoveItem}:ListProps) => (
   <ul>
     {list.map((item) => (
-      <Item key={item.objectID} item={item} />
+      <Item
+        key={item.objectID}
+        item={item}
+        onRemoveItem={onRemoveItem}
+      />
     ))}
   </ul>
 );
 
 type ItemProps = {
-  item: Story
+  item: Story;
+  onRemoveItem: (item: Story) => void;
 }
 
-const Item = ({item}:ItemProps) => (
-  <li>
-    <span>
-      <a href={item.url}>{item.title}</a>
-    </span>
-    <span>{item.author}</span>
-    <span>{item.num_comments}</span>
-    <span>{item.points}</span>
-  </li>
-);
+const Item = ({item, onRemoveItem}:ItemProps) => {
+  const handleRemoveItem = () => {
+    onRemoveItem(item);
+  }
+  return (
+    <li>
+      <span>
+        <a href={item.url}>{item.title}</a>
+      </span>
+      <span>{item.author}</span>
+      <span>{item.num_comments}</span>
+      <span>{item.points}</span>
+      <button type='button' onClick={handleRemoveItem}>Dismiss</button>
+    </li>
+  );
+}
 
 export default App
