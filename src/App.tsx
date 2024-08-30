@@ -77,15 +77,23 @@ const App = () => {
         })
       }
       setTimeout(retrieveData, 2000)
-    });
+    })
 
-  const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
+  const [searchTerm, setSearchTerm] = useStorageState('search', '');
   const [stories, setStories] = React.useState<Story[]>([])
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [isError, setIsError] = React.useState(false)
 
   React.useEffect(() => {
-    getAsyncStories().then((result) => {
-      setStories(result.data.stories);
-    });
+    setIsLoading(true);
+    getAsyncStories()
+      .then((result) => {
+        setStories(result.data.stories);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsError(true);
+      })
   }, []);
 
   const handleSearch = (event:React.ChangeEvent<HTMLInputElement>) => {
@@ -108,18 +116,24 @@ const App = () => {
 
   return (
     <div>
-      <h1>My Hacker Stories</h1>
-      <InputWithLabel
-        id='search'
-        onInputChange={handleSearch}
-        value={searchTerm}
-        isFocused // defaults to true
-        >
-        <strong>Search: </strong>
-      </InputWithLabel>
-      <hr />
-      <List list={searchedStories} onRemoveItem={handleRemoveStory}/>
-      <button type='button' onClick={resetStories}>Reset Stories</button>
+    {isError && 'Something went wrong'}
+    {
+      isLoading ? 'Loading...' :
+      <>
+        <h1>My Hacker Stories</h1>
+        <InputWithLabel
+          id='search'
+          onInputChange={handleSearch}
+          value={searchTerm}
+          isFocused // defaults to true
+          >
+          <strong>Search: </strong>
+        </InputWithLabel>
+        <hr />
+        <List list={searchedStories} onRemoveItem={handleRemoveStory}/>
+        <button type='button' onClick={resetStories}>Reset Stories</button>
+      </>
+    }
     </div>
   );
 }
