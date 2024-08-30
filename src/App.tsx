@@ -66,8 +66,27 @@ const App = () => {
       objectID: 1,
     },
   ];
+
+  const getAsyncStories = (): Promise<{ data: { stories: Story[] } }> =>
+    new Promise((resolve) => {
+      const retrieveData = () => {
+        resolve({
+          data: {
+            stories: initialStories
+          }
+        })
+      }
+      setTimeout(retrieveData, 2000)
+    });
+
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
-  const [stories, setStories] = React.useState(initialStories)
+  const [stories, setStories] = React.useState<Story[]>([])
+
+  React.useEffect(() => {
+    getAsyncStories().then((result) => {
+      setStories(result.data.stories);
+    });
+  }, []);
 
   const handleSearch = (event:React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
