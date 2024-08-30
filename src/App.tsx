@@ -82,6 +82,7 @@ const App = () => {
         id='search'
         onInputChange={handleSearch}
         value={searchTerm}
+        isFocused // defaults to true
         >
         <strong>Search: </strong>
       </InputWithLabel>
@@ -95,14 +96,35 @@ type InputWithLabelProps = {
   id: string,
   value: string,
   type?: string,
+  isFocused: boolean,
   children?: React.ReactNode,
   onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
-const InputWithLabel = ({id, value, type='text', children, onInputChange}:InputWithLabelProps) => {
+const InputWithLabel = ({
+  id,
+  value,
+  type='text',
+  onInputChange,
+  isFocused,
+  children,
+}: InputWithLabelProps) => {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  React.useEffect(() => {
+    if (isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+
   return (
     <>
       <label htmlFor={id}>{children}</label> {/* htmlFor allows clicking on label to put focus in input#search */}
-      <input id={id} type={type} value={value} onChange={onInputChange} />
+      <input
+        ref={inputRef}
+        id={id}
+        type={type}
+        value={value}
+        onChange={onInputChange}
+      />
     </>
   )
 }
